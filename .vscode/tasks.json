@@ -1,0 +1,30 @@
+{
+    // For developing TRS-80 BASIC with trs80gp
+    // CLC 30 Nov 2024
+
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Run in trs80gp",
+            "type": "shell",
+            "command": "/home/ccole/Development/trs80/trs80gp-2.5.1/linux-64/trs80gp",
+            "args":[
+                "-m1",
+                "${workspaceFolder}/${fileBasename}"
+            ],
+            "group": {
+                "kind": "test",
+                "isDefault": false
+           },
+           "problemMatcher": [],
+           "presentation": {
+            "echo": true,
+            "reveal": "always",
+            "focus": false,
+            "panel": "shared",
+            "showReuseMessage": true,
+            "clear": false
+           }
+        }
+    ]
+}
