@@ -1,0 +1,49 @@
+   1:				;"BOMB" TRACKER FOR CATCH/BAS
+   2:				;UPON USER ENTRY, SHIFTS TRACKER DOWN & ADDS NEW BOMBS
+   3:				;     WHEN NEEDED
+   4:				;
+   5:				;ENTRY: y=USR(x) x = 1 when new bomb dropped
+   6:				;                x = 0 when no new bombs dropped
+   7:				;                y = 0 when no bombs on bucket level
+   8:				;                y = PRINT@ loc'n when bomb hits bottom
+   9:				;
+  10:    0+17	0000  CD7F0A  	START   CALL    0A7FH       ;GET BOMB DROP INDICATOR
+  11:   17+13	0003  3AFF3B  	        LD      A,(15359)   ;GET BOMB TRACKING BYTE
+  12:   30+8	0006  CB3F    	        SRL     A           ;SHIFT BOMB BITS "DOWN"
+  13:   38+11	0008  F5      	        PUSH    AF          ;SAVE CARRY FLAG
+  14:   49+8	0009  CB3D    	        SRL     L           ;TEST IF H(L) = 1
+  15:   57+7+5	000B  3002    	        JR      NC,NOBOM    ;IF NC THEN DONT ADD BOMB
+  16:   64+8	000D  CBFF    	        SET     7,A         ;ADD NEW BOMB TO BYTE
+  17:   72+13	000F  32FF3B  	NOBOM   LD      (15359),A   ;SAVE NEW BYTE
+  18:   85+10	0012  F1      	        POP     AF          ;RESTORE BOMB HIT FLAG
+  19:   95+5+6	0013  D0      	        RET     NC          ;LEAVE IF NO BOMB AT BUCKET
+  20:  100+10	0014  217F3F  	        LD      HL,16255    ;END OF 14TH LINE
+  21:  110+6	0017  23      	CHECK   INC     HL          ;TO NEXT LOC'N
+  22:  116+7	0018  7E      	        LD      A,(HL)      ;CHECK LOC'N
+  23:  123+7	0019  FE40    	        CP      '@'         ;BIG BOMB THERE?
+  24:  130+7+5	001B  2804    	        JR      Z,BOMB      ;IF SO LEAVE
+  25:  137+7	001D  FE4F    	        CP      'O'         ;REG BOMB THERE?
+  26:  144+7+5	001F  20F6    	        JR      NZ,CHECK    ;IF SO LEAVE
+  27:  151+4	0021  AF      	BOMB    XOR     A           ;RESET CARRY FLAG
+  28:  155+10	0022  11003C  	        LD      DE,15360    ;SUB 15360 FOR PRINT@
+  29:  165+15	0025  ED52    	        SBC     HL,DE
+  30:  180+10	0027  C39A0A  	        JP      0A9AH       ;RETURN VALUE TO BASIC
+  31:     -	002A          	        END
+
+
+
+Statistics:
+
+     4	passes
+     0	jr promotions
+     4	symbols
+    42	bytes
+
+
+
+Symbol Table:
+
+BOMB            21        33
+CHECK           17        23
+NOBOM           0F        15
+START           00        0

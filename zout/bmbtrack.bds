@@ -1,0 +1,79 @@
+binary-debuggable-source
+0000 0000 f /home/ccole/Development/trs80/catch/bmbtrack.asm
+0000 0000 s ;"BOMB" TRACKER FOR CATCH/BAS
+0000 0000 s ;UPON USER ENTRY, SHIFTS TRACKER DOWN & ADDS NEW BOMBS
+0000 0000 s ;     WHEN NEEDED
+0000 0000 s ;
+0000 0000 s ;ENTRY: y=USR(x) x = 1 when new bomb dropped
+0000 0000 s ;                x = 0 when no new bombs dropped
+0000 0000 s ;                y = 0 when no bombs on bucket level
+0000 0000 s ;                y = PRINT@ loc'n when bomb hits bottom
+0000 0000 s ;
+0000 0000 d cd7f0a
+0000 0000 u 03 01
+0000 0000 s START   CALL    0A7FH       ;GET BOMB DROP INDICATOR
+0003 0003 d 3aff3b
+0003 0003 u 03 01
+0003 0003 s         LD      A,(15359)   ;GET BOMB TRACKING BYTE
+0006 0006 d cb3f
+0006 0006 u 02 01
+0006 0006 s         SRL     A           ;SHIFT BOMB BITS "DOWN"
+0008 0008 d f5
+0008 0008 u 01 01
+0008 0008 s         PUSH    AF          ;SAVE CARRY FLAG
+0009 0009 d cb3d
+0009 0009 u 02 01
+0009 0009 s         SRL     L           ;TEST IF H(L) = 1
+000b 000b d 3002
+000b 000b u 02 01
+000b 000b s         JR      NC,NOBOM    ;IF NC THEN DONT ADD BOMB
+000d 000d d cbff
+000d 000d u 02 01
+000d 000d s         SET     7,A         ;ADD NEW BOMB TO BYTE
+000f 000f d 32ff3b
+000f 000f u 03 01
+000f 000f s NOBOM   LD      (15359),A   ;SAVE NEW BYTE
+0012 0012 d f1
+0012 0012 u 01 01
+0012 0012 s         POP     AF          ;RESTORE BOMB HIT FLAG
+0013 0013 d d0
+0013 0013 u 01 01
+0013 0013 s         RET     NC          ;LEAVE IF NO BOMB AT BUCKET
+0014 0014 d 217f3f
+0014 0014 u 03 01
+0014 0014 s         LD      HL,16255    ;END OF 14TH LINE
+0017 0017 d 23
+0017 0017 u 01 01
+0017 0017 s CHECK   INC     HL          ;TO NEXT LOC'N
+0018 0018 d 7e
+0018 0018 u 01 01
+0018 0018 s         LD      A,(HL)      ;CHECK LOC'N
+0019 0019 d fe40
+0019 0019 u 02 01
+0019 0019 s         CP      '@'         ;BIG BOMB THERE?
+001b 001b d 2804
+001b 001b u 02 01
+001b 001b s         JR      Z,BOMB      ;IF SO LEAVE
+001d 001d d fe4f
+001d 001d u 02 01
+001d 001d s         CP      'O'         ;REG BOMB THERE?
+001f 001f d 20f6
+001f 001f u 02 01
+001f 001f s         JR      NZ,CHECK    ;IF SO LEAVE
+0021 0021 d af
+0021 0021 u 01 01
+0021 0021 s BOMB    XOR     A           ;RESET CARRY FLAG
+0022 0022 d 11003c
+0022 0022 u 03 01
+0022 0022 s         LD      DE,15360    ;SUB 15360 FOR PRINT@
+0025 0025 d ed52
+0025 0025 u 02 01
+0025 0025 s         SBC     HL,DE
+0027 0027 d c39a0a
+0027 0027 u 03 01
+0027 0027 s         JP      0A9AH       ;RETURN VALUE TO BASIC
+002a 002a s         END
+000f a NOBOM
+0021 a BOMB
+0017 a CHECK
+0000 a START
